@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spettacolo Motors · Esportivos, SUVs e Colecionáveis</title>
+  <meta name="description" content="Curadoria a nível nacional de esportivos, SUVs premium e colecionáveis. Nova Lima — MG.">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Spettacolo Motors · Esportivos, SUVs e Colecionáveis">
+  <meta property="og:description" content="Curadoria a nível nacional de esportivos, SUVs premium e colecionáveis. Nova Lima — MG.">
+  <meta property="og:url" content="https://spettacolomotors.com.br/">
+  <meta property="og:image" content="https://www.autocerto.com/fotos/4734/4868508/10_104159.jpg">
+  <meta property="og:locale" content="pt_BR">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Spettacolo Motors · Esportivos, SUVs e Colecionáveis">
+  <meta name="twitter:description" content="Curadoria a nível nacional de esportivos, SUVs premium e colecionáveis. Nova Lima — MG.">
+  <meta name="twitter:image" content="https://www.autocerto.com/fotos/4734/4868508/10_104159.jpg">
+
+  <!-- Schema JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoDealer",
+    "name": "Spettacolo Motors",
+    "description": "Curadoria a nível nacional de esportivos, SUVs premium e colecionáveis.",
+    "url": "https://spettacolomotors.com.br",
+    "telephone": ["+55-31-99977-0215", "+55-31-99161-5477"],
+    "email": "contato@spettacolomotors.com.br",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Avenida Victoria, Nº 260",
+      "addressLocality": "Nova Lima",
+      "addressRegion": "MG",
+      "addressCountry": "BR"
+    },
+    "openingHours": ["Mo-Fr 09:00-18:00", "Sa 09:00-16:00"],
+    "sameAs": [
+      "https://www.instagram.com/spettacolo.motors/",
+      "https://www.tiktok.com/@spettacolomotors"
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    #__splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #0A1B33;
+      display: grid; place-items: center;
+      transition: opacity 0.5s ease;
+    }
+    #__splash .ring {
+      width: 84px; height: 84px;
+      border-radius: 50%;
+      border: 1px solid #D9B048;
+      display: grid; place-items: center;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 34px;
+      color: #D9B048;
+      animation: splashPulse 1.6s ease-in-out infinite;
+    }
+    #__splash .lbl {
+      position: absolute;
+      bottom: 60px; left: 50%; transform: translateX(-50%);
+      font-family: 'Manrope', system-ui, sans-serif;
+      font-size: 10px; letter-spacing: 0.4em; text-transform: uppercase;
+      color: rgba(245, 242, 235, 0.4);
+    }
+    @keyframes splashPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.06); opacity: 0.7; }
+    }
+  </style>
+</head>
+<body>
+  <div id="__splash">
+    <div class="ring">ST</div>
+    <div class="lbl">Spettacolo Motors</div>
+  </div>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script src="data.js"></script>
+  <script type="text/babel" src="components.jsx"></script>
+  <script type="text/babel" src="pages.jsx"></script>
+  <script type="text/babel" src="admin.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+</body>
+</html>
