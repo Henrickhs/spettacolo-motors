@@ -193,15 +193,16 @@ h1.display {
 @media (max-width: 960px) { .nav-cta.hide-mobile { display: none; } }
 
 .menu-toggle { display: none; }
+.nav-mobile { display: none; }
 
 @media (max-width: 960px) {
   .nav-links { display: none; }
   .menu-toggle { display: grid; place-items: center; width: 40px; height: 40px; color: var(--ink); }
   .nav-mobile {
+    display: flex;
     position: fixed; inset: 70px 0 0 0;
     background: var(--bg);
     padding: 32px;
-    display: flex;
     flex-direction: column;
     gap: 22px;
     z-index: 99;
