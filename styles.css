@@ -338,18 +338,6 @@ h1.display {
   z-index: 0;
   background: url('hero-poster.webp') center / cover no-repeat;
 }
-.hero-scanline {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: repeating-linear-gradient(180deg,
-    transparent 0px,
-    transparent 3px,
-    rgba(217, 176, 72, 0.025) 3px,
-    rgba(217, 176, 72, 0.025) 4px);
-  mix-blend-mode: overlay;
-}
 .hero-overlay {
   position: absolute;
   inset: 0;
@@ -450,7 +438,6 @@ h1.display {
     width: 100%;
     justify-content: center;
   }
-  .hero-scanline,
   .hero-grain,
   .hero-dust {
     display: none;
@@ -1123,25 +1110,6 @@ h1.display {
   align-items: center;
 }
 @media (max-width: 960px) { .split { grid-template-columns: 1fr; gap: 40px; } }
-.placeholder-img {
-  aspect-ratio: 3/4;
-  background:
-    repeating-linear-gradient(135deg, var(--surface) 0px, var(--surface) 8px, var(--surface-2) 8px, var(--surface-2) 16px);
-  border: 1px solid var(--line);
-  display: grid;
-  place-items: center;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-  position: relative;
-}
-.placeholder-img::after {
-  content: '';
-  position: absolute; inset: 16px;
-  border: 1px solid var(--line-soft);
-}
 .about-showcase {
   display: grid;
   grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);

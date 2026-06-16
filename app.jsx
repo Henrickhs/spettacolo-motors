@@ -17,7 +17,6 @@ function App() {
   if (path === '/' || path === '') page = <HomePage/>;
   else if (path === '/estoque') page = <EstoquePage/>;
   else if (path.startsWith('/veiculo/')) page = <CarDetailPage id={path.replace('/veiculo/', '')}/>;
-  else if (path === '/financiamento') page = <FinanciamentoPage/>;
   else if (path === '/vender') page = <VenderPage/>;
   else if (path === '/empresa') page = <EmpresaPage/>;
   else if (path === '/contato') page = <ContatoPage/>;

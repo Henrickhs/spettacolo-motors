@@ -49,7 +49,6 @@ function NavBar() {
   const links = [
     { href: '/',             label: 'Home' },
     { href: '/estoque',      label: 'Estoque' },
-    { href: '/financiamento',label: 'Financiamento' },
     { href: '/vender',       label: 'Venda seu Veículo' },
     { href: '/empresa',      label: 'Quem Somos' },
     { href: '/contato',      label: 'Contato' }
@@ -103,7 +102,7 @@ function CarCard({ car }) {
       <div className="car-img-wrap">
         <img className="car-img" src={image} alt={car.brand + ' ' + car.model}
              loading="lazy" decoding="async"
-             onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.style.background = 'repeating-linear-gradient(135deg, #15130F 0px, #15130F 8px, #1C1915 8px, #1C1915 16px)'; }}/>
+             onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.style.background = 'var(--surface)'; }}/>
         <div className="car-tag">{car.ref}</div>
       </div>
       <div className="car-info">
@@ -144,7 +143,6 @@ function Footer() {
             <div className="footer-list">
               <a href="#/" onClick={(e)=>{e.preventDefault();SM_NAV.go('/');}}>Home</a>
               <a href="#/estoque" onClick={(e)=>{e.preventDefault();SM_NAV.go('/estoque');}}>Estoque</a>
-              <a href="#/financiamento" onClick={(e)=>{e.preventDefault();SM_NAV.go('/financiamento');}}>Financiamento</a>
               <a href="#/vender" onClick={(e)=>{e.preventDefault();SM_NAV.go('/vender');}}>Venda seu Veículo</a>
               <a href="#/empresa" onClick={(e)=>{e.preventDefault();SM_NAV.go('/empresa');}}>Quem Somos</a>
               <a href="#/contato" onClick={(e)=>{e.preventDefault();SM_NAV.go('/contato');}}>Contato</a>

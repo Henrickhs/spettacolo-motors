@@ -38,7 +38,6 @@ function Hero() {
       </video>
       <div className="hero-overlay"/>
       <div className="hero-grain"/>
-      <div className="hero-scanline"/>
       <HeroDust/>
 
       <div className="hero-inner">
@@ -203,7 +202,7 @@ function PresentationVideoSection() {
               Conheca a Spettacolo<br/>antes de <em style={{fontStyle:'italic', color:'var(--gold)'}}>visitar.</em>
             </h2>
             <p>
-              Um espaco curto para o cliente dar play e sentir a loja, o atendimento e o cuidado com os carros. O arquivo oficial pode entrar como <strong>presentation-video.mp4</strong>.
+              Um video curto para sentir a loja, o atendimento e o cuidado com os carros antes do primeiro contato.
             </p>
           </div>
           <div className="presentation-video-card">
@@ -211,8 +210,8 @@ function PresentationVideoSection() {
               <source src="presentation-video.mp4" type="video/mp4"/>
             </video>
             <div className="video-caption">
-              <span>Apresentacao institucional</span>
-              <small>Formato ideal: MP4 horizontal, ate 60s</small>
+              <span>Apresentacao da loja</span>
+              <small>Assista antes de falar com um consultor</small>
             </div>
           </div>
         </div>
@@ -281,7 +280,7 @@ function SpotlightSection({ car }) {
 function ConciergeSection() {
   const services = [
     { t: 'Procedencia', d: 'Historico, laudo e revisao antes da negociacao.' },
-    { t: 'Financiamento', d: 'Simulacao rapida e proposta com consultor.' },
+    { t: 'Proposta', d: 'Valores, troca e condicoes alinhados direto com o consultor.' },
     { t: 'Entrega', d: 'Retirada na loja ou envio combinado com seguranca.' },
     { t: 'Video chamada', d: 'Mostramos detalhes do carro ao vivo antes da visita.' }
   ];
@@ -353,7 +352,7 @@ function EstoquePage() {
       <PageHeader
         eyebrow="Nosso estoque"
         title={<>Toda a <em style={{fontStyle:'italic', color:'var(--gold)'}}>coleção,</em><br/>num só lugar.</>}
-        sub="Esportivos, SUVs premium e colecionáveis disponíveis para compra imediata. Atualizamos diariamente — pergunte sobre disponibilidade e financiamento."
+        sub="Esportivos, SUVs premium e colecionáveis disponíveis para compra imediata. Atualizamos diariamente — fale com um consultor para confirmar disponibilidade."
       />
       <section style={{padding:'40px 0 120px'}}>
         <div className="container">
@@ -495,7 +494,7 @@ function CarDetailPage({ id }) {
 
               <div className="flex gap-sm" style={{flexWrap:'wrap', gap:12}}>
                 <a className="btn" href={whatsUrl} target="_blank" rel="noreferrer">Conversar no WhatsApp <span className="arrow">→</span></a>
-                <button className="btn ghost" onClick={() => SM_NAV.go('/financiamento?ref=' + car.ref)}>Simular financiamento</button>
+                <button className="btn ghost" onClick={() => SM_NAV.go('/contato')}>Falar com consultor</button>
               </div>
 
               <div style={{marginTop:32, padding:24, background:'var(--surface)', border:'1px solid var(--line-soft)'}}>
@@ -507,95 +506,6 @@ function CarDetailPage({ id }) {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-// ============================================
-// FINANCIAMENTO
-// ============================================
-function FinanciamentoPage() {
-  const [cars] = useCars();
-  const route = useRoute();
-  const prefRef = uM(() => {
-    const q = route.split('?')[1];
-    if (!q) return '';
-    return new URLSearchParams(q).get('ref') || '';
-  }, [route]);
-
-  const [form, setForm] = uS({ nome:'', cpf:'', telefone:'', email:'', renda:'', veiculo: prefRef, entrada:'', parcelas:'48', mensagem:'' });
-  const [sent, setSent] = uS(false);
-  uE(() => setForm(f => ({ ...f, veiculo: prefRef })), [prefRef]);
-
-  const submit = (e) => {
-    e.preventDefault();
-    SM_LEADS.add({
-      kind: 'Financiamento',
-      nome: form.nome,
-      telefone: form.telefone,
-      email: form.email,
-      subj: form.veiculo || 'Financiamento',
-      status: 'novo',
-      obs: `Renda: ${form.renda} | Entrada: ${form.entrada} | Parcelas: ${form.parcelas}x${form.mensagem ? ' | ' + form.mensagem : ''}`
-    });
-    setSent(true);
-  };
-
-  if (sent) {
-    return (
-      <div className="route-anim">
-        <section style={{padding:'200px 0', textAlign:'center'}}>
-          <div className="container">
-            <div className="eyebrow" style={{marginBottom:20}}>Recebido</div>
-            <h2 className="serif" style={{fontSize:72, lineHeight:1, marginBottom:24}}>
-              Obrigado, <em style={{fontStyle:'italic', color:'var(--gold)'}}>{form.nome.split(' ')[0] || 'amigo'}.</em>
-            </h2>
-            <p style={{color:'var(--ink-mute)', maxWidth:520, margin:'0 auto 40px', lineHeight:1.7}}>
-              Sua ficha foi enviada. Nosso consultor entrará em contato em até 1h útil pelo telefone informado.
-            </p>
-            <button className="btn ghost" onClick={() => SM_NAV.go('/estoque')}>Ver estoque <span className="arrow">→</span></button>
-          </div>
-        </section>
-      </div>
-    );
-  }
-
-  return (
-    <div className="route-anim">
-      <PageHeader
-        eyebrow="Ficha de financiamento"
-        title={<>Financie em até <em style={{fontStyle:'italic', color:'var(--gold)'}}>60x.</em></>}
-        sub="Trabalhamos com os principais bancos do país e CDC com taxas competitivas. Preencha sua ficha — em até 1h útil retornamos com a simulação."
-      />
-      <section style={{padding:'40px 0 120px'}}>
-        <div className="container">
-          <form onSubmit={submit}>
-            <div className="form-grid">
-              <div className="form-field"><label>Nome completo</label><input value={form.nome} onChange={e => setForm({...form, nome: e.target.value})} required/></div>
-              <div className="form-field"><label>CPF</label><input value={form.cpf} onChange={e => setForm({...form, cpf: e.target.value})} placeholder="000.000.000-00"/></div>
-              <div className="form-field"><label>Telefone / WhatsApp</label><input value={form.telefone} onChange={e => setForm({...form, telefone: e.target.value})} required placeholder="(31) 9 9999-9999"/></div>
-              <div className="form-field"><label>E-mail</label><input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})}/></div>
-              <div className="form-field"><label>Renda mensal aproximada</label><input value={form.renda} onChange={e => setForm({...form, renda: e.target.value})} placeholder="R$ 10.000"/></div>
-              <div className="form-field"><label>Veículo de interesse (ref. ou modelo)</label><input value={form.veiculo} onChange={e => setForm({...form, veiculo: e.target.value})} placeholder="ST-001 ou BMW X6"/></div>
-              <div className="form-field"><label>Entrada disponível</label><input value={form.entrada} onChange={e => setForm({...form, entrada: e.target.value})} placeholder="R$ 100.000"/></div>
-              <div className="form-field"><label>Parcelas desejadas</label>
-                <select value={form.parcelas} onChange={e => setForm({...form, parcelas: e.target.value})}>
-                  <option value="12">12 meses</option>
-                  <option value="24">24 meses</option>
-                  <option value="36">36 meses</option>
-                  <option value="48">48 meses</option>
-                  <option value="60">60 meses</option>
-                </select>
-              </div>
-              <div className="form-field full"><label>Observações</label><textarea value={form.mensagem} onChange={e => setForm({...form, mensagem: e.target.value})} placeholder="Conte mais sobre o que você procura..."/></div>
-            </div>
-            <div className="flex gap-sm" style={{marginTop:32, justifyContent:'flex-end', flexWrap:'wrap', gap:12}}>
-              <button type="button" className="btn ghost" onClick={() => history.back()}>Cancelar</button>
-              <button type="submit" className="btn">Enviar ficha <span className="arrow">→</span></button>
-            </div>
-          </form>
         </div>
       </section>
     </div>
@@ -700,7 +610,7 @@ function EmpresaPage() {
                 O cliente ve o estoque, analisa fotos e informacoes essenciais, depois fala com um consultor para entender historico, laudo, condicao, proposta e entrega.
               </p>
               <p style={{color:'var(--ink-mute)', fontSize:15, lineHeight:1.8, marginBottom:32}}>
-                A loja trabalha com compra, venda, troca, consignacao e financiamento, sempre com uma selecao mais objetiva: carros bem apresentados, atendimento rapido e negociacao acompanhada de perto.
+                A loja trabalha com compra, venda, troca e consignacao, sempre com uma selecao mais objetiva: carros bem apresentados, atendimento rapido e negociacao acompanhada de perto.
               </p>
               <div className="flex gap-sm" style={{flexWrap:'wrap', gap:12}}>
                 <button className="btn" onClick={() => SM_NAV.go('/estoque')}>Ver estoque <span className="arrow">{'>'}</span></button>
@@ -799,5 +709,5 @@ function ContatoPage() {
 }
 
 Object.assign(window, {
-  HomePage, EstoquePage, CarDetailPage, FinanciamentoPage, VenderPage, EmpresaPage, ContatoPage
+  HomePage, EstoquePage, CarDetailPage, VenderPage, EmpresaPage, ContatoPage
 });
