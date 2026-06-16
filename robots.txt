@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://spettacolomotors.com.br/sitemap.xml
