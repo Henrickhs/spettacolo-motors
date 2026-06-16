@@ -16,6 +16,7 @@ function HomePage() {
       <Hero />
       <FeaturedSection cars={featured} total={cars.length} />
       <ConciergeSection />
+      <PresentationVideoSection />
       <CTASection />
     </div>
   );
@@ -191,6 +192,35 @@ function CTASection() {
   );
 }
 
+function PresentationVideoSection() {
+  return (
+    <section className="section video-section">
+      <div className="container">
+        <div className="video-home">
+          <div className="video-copy">
+            <div className="eyebrow" style={{marginBottom:14}}>Video de apresentacao</div>
+            <h2 className="section-title">
+              Conheca a Spettacolo<br/>antes de <em style={{fontStyle:'italic', color:'var(--gold)'}}>visitar.</em>
+            </h2>
+            <p>
+              Um espaco curto para o cliente dar play e sentir a loja, o atendimento e o cuidado com os carros. O arquivo oficial pode entrar como <strong>presentation-video.mp4</strong>.
+            </p>
+          </div>
+          <div className="presentation-video-card">
+            <video controls playsInline preload="metadata" poster="hero-poster.webp">
+              <source src="presentation-video.mp4" type="video/mp4"/>
+            </video>
+            <div className="video-caption">
+              <span>Apresentacao institucional</span>
+              <small>Formato ideal: MP4 horizontal, ate 60s</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Marquee() {
   const items = ['Esportivos', 'SUVs Premium', 'Colecionáveis', 'Curadoria Nacional', 'Procedência Verificada', 'Concierge'];
   return (
@@ -252,7 +282,8 @@ function ConciergeSection() {
   const services = [
     { t: 'Procedencia', d: 'Historico, laudo e revisao antes da negociacao.' },
     { t: 'Financiamento', d: 'Simulacao rapida e proposta com consultor.' },
-    { t: 'Entrega', d: 'Retirada na loja ou envio combinado com seguranca.' }
+    { t: 'Entrega', d: 'Retirada na loja ou envio combinado com seguranca.' },
+    { t: 'Video chamada', d: 'Mostramos detalhes do carro ao vivo antes da visita.' }
   ];
   return (
     <section className="section concierge" style={{background:'var(--bg-2)', borderTop:'1px solid var(--line-soft)', borderBottom:'1px solid var(--line-soft)'}}>
@@ -647,28 +678,32 @@ function EmpresaPage() {
     <div className="route-anim">
       <PageHeader
         eyebrow="Quem somos"
-        title={<>Curadoria a nível <em style={{fontStyle:'italic', color:'var(--gold)'}}>nacional.</em></>}
-        sub="Desde 2010 selecionando esportivos, SUVs premium e colecionáveis. Em Nova Lima — Minas Gerais, atendemos clientes em todo o Brasil."
+        title={<>Carros especiais, escolhidos com <em style={{fontStyle:'italic', color:'var(--gold)'}}>criterio.</em></>}
+        sub="A Spettacolo Motors conecta clientes a esportivos, SUVs premium e modelos de colecao com atendimento consultivo em Nova Lima, Minas Gerais."
       />
       <section className="section">
         <div className="container">
-          <div className="split">
-            <div className="placeholder-img">
-              SHOWROOM PHOTO · Spettacolo Motors · Nova Lima
+          <div className="about-showcase">
+            <div className="about-media">
+              <img src="assets/catalog-optimized/audi-a3-2016-4047856/01-gallery.webp" alt="Veiculo em destaque no catalogo Spettacolo Motors" loading="lazy"/>
+              <div className="about-media-label">
+                <span>Nova Lima, MG</span>
+                <strong>Atendimento para todo o Brasil</strong>
+              </div>
             </div>
             <div>
-              <div className="eyebrow" style={{marginBottom:14}}>A casa</div>
+              <div className="eyebrow" style={{marginBottom:14}}>A loja</div>
               <h2 className="section-title" style={{marginBottom:24}}>
-                Um <em style={{fontStyle:'italic', color:'var(--gold)'}}>endereço</em><br/>para quem coleciona.
+                Menos vitrine infinita.<br/>Mais <em style={{fontStyle:'italic', color:'var(--gold)'}}>conversa certa.</em>
               </h2>
               <p style={{color:'var(--ink-mute)', fontSize:15, lineHeight:1.8, marginBottom:20}}>
-                A Spettacolo Motors nasceu da paixão por carros raros e da convicção de que cada veículo merece uma narrativa. Trabalhamos com curadoria criteriosa — não anunciamos volume, anunciamos peças.
+                O cliente ve o estoque, analisa fotos e informacoes essenciais, depois fala com um consultor para entender historico, laudo, condicao, proposta e entrega.
               </p>
               <p style={{color:'var(--ink-mute)', fontSize:15, lineHeight:1.8, marginBottom:32}}>
-                Esportivos, SUVs premium e colecionáveis. Vendas, compra direta, troca, consignação e financiamento — tudo sob o mesmo teto, com a mesma atenção aos detalhes.
+                A loja trabalha com compra, venda, troca, consignacao e financiamento, sempre com uma selecao mais objetiva: carros bem apresentados, atendimento rapido e negociacao acompanhada de perto.
               </p>
               <div className="flex gap-sm" style={{flexWrap:'wrap', gap:12}}>
-                <button className="btn" onClick={() => SM_NAV.go('/estoque')}>Ver estoque <span className="arrow">→</span></button>
+                <button className="btn" onClick={() => SM_NAV.go('/estoque')}>Ver estoque <span className="arrow">{'>'}</span></button>
                 <button className="btn ghost" onClick={() => SM_NAV.go('/contato')}>Visitar a loja</button>
               </div>
             </div>
@@ -678,22 +713,22 @@ function EmpresaPage() {
 
       <div className="stat-row">
         <div className="stat"><div className="n">15+</div><div className="l">Anos de mercado</div></div>
-        <div className="stat"><div className="n">2.4k</div><div className="l">Carros entregues</div></div>
-        <div className="stat"><div className="n">11.6k</div><div className="l">Seguidores no IG</div></div>
-        <div className="stat"><div className="n">100%</div><div className="l">Procedência verificada</div></div>
+        <div className="stat"><div className="n">53</div><div className="l">Veiculos no catalogo</div></div>
+        <div className="stat"><div className="n">1k+</div><div className="l">Fotos importadas</div></div>
+        <div className="stat"><div className="n">BR</div><div className="l">Atendimento nacional</div></div>
       </div>
 
       <section className="section">
         <div className="container">
-          <div className="eyebrow" style={{marginBottom:14}}>Valores</div>
+          <div className="eyebrow" style={{marginBottom:14}}>Como operamos</div>
           <h2 className="section-title" style={{marginBottom:60}}>
-            Como <em style={{fontStyle:'italic', color:'var(--gold)'}}>operamos</em>.
+            O que precisa estar claro antes da <em style={{fontStyle:'italic', color:'var(--gold)'}}>negociacao.</em>
           </h2>
-          <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:1, background:'var(--line-soft)', border:'1px solid var(--line-soft)'}} className="cat-grid">
+          <div className="about-values">
             {[
-              { t: 'Transparência', d: 'Histórico, laudo, procedência. Tudo aberto antes da venda.' },
-              { t: 'Curadoria', d: 'Compramos peças, não estoque. Cada carro passa por triagem técnica.' },
-              { t: 'Relação', d: 'Atendemos colecionadores há mais de 15 anos. A maioria volta.' }
+              { t: 'Procedencia', d: 'Historico, laudo e condicao do carro explicados sem rodeio.' },
+              { t: 'Escolha', d: 'Estoque enxuto, fotografado com cuidado e facil de comparar.' },
+              { t: 'Acompanhamento', d: 'Do primeiro contato ate a entrega, o consultor conduz a negociacao.' }
             ].map(v => (
               <div key={v.t} style={{background:'var(--bg-2)', padding:'40px 32px'}}>
                 <h3 className="serif" style={{fontSize:32, lineHeight:1, marginBottom:16, fontStyle:'italic', color:'var(--gold)'}}>{v.t}</h3>
