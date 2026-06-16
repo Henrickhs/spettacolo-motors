@@ -133,7 +133,7 @@ function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div>
-            <Logo />
+            <Logo size="footer" />
             <p style={{marginTop:20, color:'var(--ink-mute)', fontSize:14, maxWidth:380, lineHeight:1.7}}>
               Esportivos, SUVs e colecionáveis. Curadoria a nível nacional, desde Nova Lima — Minas Gerais.
             </p>
