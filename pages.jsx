@@ -14,12 +14,8 @@ function HomePage() {
   return (
     <div className="route-anim">
       <Hero />
-      <Marquee />
-      <BrandStrip />
-      <FeaturedSection cars={featured} />
+      <FeaturedSection cars={featured} total={cars.length} />
       <ConciergeSection />
-      <CategorySection />
-      <ProcessSection />
       <CTASection />
     </div>
   );
@@ -47,7 +43,7 @@ function Hero() {
       <div className="hero-inner">
         <div className="hero-meta">
           <div className="hero-meta-left">
-            <div className="eyebrow" data-anim="fade-up" data-delay="100">Esportivos · SUVs · Colecionáveis</div>
+            <div className="eyebrow" data-anim="fade-up" data-delay="100">Esportivos - SUVs - Colecionaveis</div>
           </div>
         </div>
 
@@ -57,14 +53,14 @@ function Hero() {
           <span className="word-reveal" style={{animationDelay:'0.45s'}}><em>Motors.</em></span>
         </h1>
         <p className="hero-sub" data-anim="fade-up" data-delay="700">
-          Uma curadoria de máquinas raras para quem entende que dirigir é arte. Esportivos, SUVs premium e colecionáveis — selecionados peça por peça, com procedência verificada e atendimento concierge.
+          Veja o estoque, escolha o carro e fale direto com um consultor. A curadoria acontece no atendimento, com fotos, procedencia e informacoes essenciais.
         </p>
         <div className="hero-actions" data-anim="fade-up" data-delay="900">
           <button className="btn" onClick={() => SM_NAV.go('/estoque')}>
-            Ver estoque <span className="arrow">→</span>
+            Ver estoque <span className="arrow">{'>'}</span>
           </button>
           <button className="btn ghost" onClick={() => SM_NAV.go('/vender')}>
-            Vender meu veículo
+            Vender meu veiculo
           </button>
         </div>
       </div>
@@ -97,19 +93,19 @@ function BrandStrip() {
   );
 }
 
-function FeaturedSection({ cars }) {
+function FeaturedSection({ cars, total }) {
   return (
     <section className="section">
       <div className="container" style={{marginBottom:48}}>
         <div className="flex between" style={{alignItems:'flex-end', flexWrap:'wrap', gap:24}} data-anim="fade-up">
           <div>
-            <div className="eyebrow" style={{marginBottom:14}}>Em destaque · últimas novidades</div>
+            <div className="eyebrow" style={{marginBottom:14}}>Estoque selecionado</div>
             <h2 className="section-title">
-              Coleção <em style={{fontStyle:'italic', color:'var(--gold)'}}>atual</em>
+              Escolha pelas <em style={{fontStyle:'italic', color:'var(--gold)'}}>fotos.</em><br/>Resolva pelo contato.
             </h2>
           </div>
           <button className="btn gold-line" onClick={() => SM_NAV.go('/estoque')}>
-            Ver todos · {cars.length}+ <span className="arrow">→</span>
+            Ver estoque completo ({total || cars.length}) <span className="arrow">{'>'}</span>
           </button>
         </div>
       </div>
@@ -254,23 +250,22 @@ function SpotlightSection({ car }) {
 
 function ConciergeSection() {
   const services = [
-    { t: 'Procedência', d: 'Laudo cautelar, vistoria mecânica e histórico aberto antes de cada venda.' },
-    { t: 'Financiamento', d: 'Parcerias com os maiores bancos. Aprovação em até 1h útil, sem burocracia.' },
-    { t: 'Troca & Consignação', d: 'Aceitamos seu carro na troca ou cuidamos da venda dele para você.' },
-    { t: 'Entrega Nacional', d: 'Levamos o carro até você em qualquer estado, com seguro e cegonha credenciada.' }
+    { t: 'Procedencia', d: 'Historico, laudo e revisao antes da negociacao.' },
+    { t: 'Financiamento', d: 'Simulacao rapida e proposta com consultor.' },
+    { t: 'Entrega', d: 'Retirada na loja ou envio combinado com seguranca.' }
   ];
   return (
     <section className="section concierge" style={{background:'var(--bg-2)', borderTop:'1px solid var(--line-soft)', borderBottom:'1px solid var(--line-soft)'}}>
       <div className="container">
         <div style={{display:'grid', gridTemplateColumns:'1fr 1.6fr', gap:80, alignItems:'start'}} className="conc-grid">
           <div>
-            <div className="eyebrow" style={{marginBottom:14}}>Serviço · concierge</div>
+            <div className="eyebrow" style={{marginBottom:14}}>Atendimento - curadoria</div>
             <h2 className="section-title">
-              Muito além de<br/>uma <em style={{fontStyle:'italic', color:'var(--gold)'}}>concessionária.</em>
+              Curadoria depois<br/>do <em style={{fontStyle:'italic', color:'var(--gold)'}}>primeiro contato.</em>
             </h2>
             <div className="hr-gold" style={{marginTop:32, marginBottom:32}}/>
             <p style={{color:'var(--ink-mute)', fontSize:15, lineHeight:1.8}}>
-              Cuidamos do processo inteiro — do primeiro contato à entrega no seu endereço. Você só pensa em dirigir.
+              O site mostra o essencial. No contato, o consultor aprofunda procedencia, historico, proposta e entrega.
             </p>
           </div>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:1, background:'var(--line-soft)', border:'1px solid var(--line-soft)'}} className="conc-services">

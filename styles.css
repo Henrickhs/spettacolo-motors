@@ -366,6 +366,44 @@ h1.display {
 }
 .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
 
+@media (max-width: 720px) {
+  .hero {
+    min-height: 620px;
+    height: 92svh;
+    align-items: flex-end;
+  }
+  .hero-inner {
+    padding: 0 20px 44px;
+  }
+  .hero-meta {
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(58px, 20vw, 86px);
+    line-height: 0.9;
+    letter-spacing: -0.025em;
+    margin-bottom: 22px;
+  }
+  .hero-sub {
+    max-width: 34rem;
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 24px;
+  }
+  .hero-actions {
+    gap: 10px;
+  }
+  .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .hero-scanline,
+  .hero-grain,
+  .hero-dust {
+    display: none;
+  }
+}
+
 .hero-scroll {
   position: absolute;
   left: 32px; bottom: 24px;
@@ -599,7 +637,24 @@ h1.display {
   border-bottom: 1px solid var(--line-soft);
 }
 @media (max-width: 960px) { .car-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 640px) { .car-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .car-grid { grid-template-columns: 1fr; }
+  .car-info { padding: 22px 20px 24px; }
+  .car-model { font-size: 30px; }
+  .car-spec { min-height: auto; }
+  .car-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .car-meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .car-price {
+    font-size: 28px;
+  }
+}
 
 .car-card {
   background: var(--bg);
@@ -878,7 +933,18 @@ h1.display {
   gap: 40px;
   margin-bottom: 60px;
 }
-@media (max-width: 720px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 720px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 34px 24px;
+  }
+}
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
 .footer h4 {
   font-family: var(--sans);
   font-size: 11px;
@@ -888,7 +954,7 @@ h1.display {
   font-weight: 600;
   margin-bottom: 22px;
 }
-.footer-list { display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: var(--ink-mute); }
+.footer-list { display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: var(--ink-mute); overflow-wrap: anywhere; }
 .footer-list a:hover { color: var(--gold); }
 .footer-bottom {
   border-top: 1px solid var(--line-soft);
