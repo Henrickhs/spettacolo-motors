@@ -265,7 +265,7 @@ function AdminCars() {
         <tbody>
           {filtered.map(c => (
             <tr key={c.id}>
-              <td style={{width:80}}><img className="thumb" src={c.image} alt="" onError={e => e.target.removeAttribute('src')}/></td>
+              <td style={{width:80}}><img className="thumb" src={c.thumbImage || c.image} alt="" loading="lazy" decoding="async" onError={e => e.target.removeAttribute('src')}/></td>
               <td>
                 <div style={{fontFamily:'var(--serif)', fontSize:16}}>{c.brand} {c.model}</div>
                 <div style={{fontSize:11, color:'var(--ink-mute)'}}>{c.version}</div>

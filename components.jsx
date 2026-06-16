@@ -97,10 +97,12 @@ function NavBar() {
 
 // ---------------- CAR CARD ----------------
 function CarCard({ car }) {
+  const image = car.thumbImage || car.image;
   return (
     <article className="car-card" onClick={() => SM_NAV.go('/veiculo/' + car.id)}>
       <div className="car-img-wrap">
-        <img className="car-img" src={car.image} alt={car.brand + ' ' + car.model}
+        <img className="car-img" src={image} alt={car.brand + ' ' + car.model}
+             loading="lazy" decoding="async"
              onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.style.background = 'repeating-linear-gradient(135deg, #15130F 0px, #15130F 8px, #1C1915 8px, #1C1915 16px)'; }}/>
         <div className="car-tag">{car.ref}</div>
       </div>

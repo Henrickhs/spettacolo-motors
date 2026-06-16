@@ -387,6 +387,9 @@ function CarDetailPage({ id }) {
 
   const whatsMsg = encodeURIComponent(`Olá! Tenho interesse no ${car.brand} ${car.model} (Ref ${car.ref}). Está disponível?`);
   const whatsUrl = `https://api.whatsapp.com/send?phone=${SM_DATA.contact.whatsapp}&text=${whatsMsg}`;
+  const gallery = car.images && car.images.length ? car.images : [{ gallery: car.image, thumb: car.thumbImage || car.image }];
+  const [activeImage, setActiveImage] = uS(0);
+  const selectedImage = gallery[activeImage] || gallery[0];
 
   return (
     <div className="route-anim">
@@ -398,9 +401,23 @@ function CarDetailPage({ id }) {
           </button>
 
           <div className="detail-grid">
-            <div className="detail-img">
-              <img src={car.image} alt={car.brand + ' ' + car.model}
-                   onError={(e) => { e.target.style.display='none'; }}/>
+            <div>
+              <div className="detail-img">
+                <img src={selectedImage.gallery || selectedImage.thumb || car.image} alt={car.brand + ' ' + car.model}
+                     loading="eager" decoding="async"
+                     onError={(e) => { e.target.style.display='none'; }}/>
+              </div>
+              {gallery.length > 1 && (
+                <div className="detail-thumbs" aria-label="Fotos do veiculo">
+                  {gallery.map((img, index) => (
+                    <button key={index} className={"detail-thumb " + (index === activeImage ? "active" : "")}
+                            onClick={() => setActiveImage(index)}
+                            aria-label={"Ver foto " + (index + 1)}>
+                      <img src={img.thumb || img.gallery} alt="" loading="lazy" decoding="async"/>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="detail-side">
