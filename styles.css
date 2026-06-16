@@ -137,13 +137,14 @@ h1.display {
 }
 .logo-mark-img {
   display: block;
-  width: 64px;
-  height: 64px;
+  width: 122px;
+  height: auto;
+  max-height: 54px;
   object-fit: contain;
   transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 .logo-wordmark-img {
-  width: clamp(176px, 16vw, 228px);
+  width: clamp(166px, 15vw, 218px);
   height: auto;
   max-height: 42px;
   object-fit: contain;
@@ -156,12 +157,12 @@ h1.display {
   align-items: flex-start;
 }
 .footer .logo-wordmark-img {
-  width: min(280px, 100%);
+  width: min(220px, calc(100% - 84px));
   max-height: none;
 }
 .footer .logo-mark-img {
-  width: 58px;
-  height: 58px;
+  width: 72px;
+  max-height: 36px;
 }
 .nav-links {
   display: flex;
@@ -210,11 +211,11 @@ h1.display {
     gap: 12px;
   }
   .logo-mark-img {
-    width: 58px;
-    height: 58px;
+    width: 104px;
+    max-height: 46px;
   }
   .logo-wordmark-img {
-    width: clamp(150px, 43vw, 205px);
+    width: clamp(142px, 38vw, 190px);
     max-height: 36px;
   }
   .nav-links { display: none; }
@@ -252,11 +253,11 @@ h1.display {
     padding-right: 20px;
   }
   .logo-mark-img {
-    width: 54px;
-    height: 54px;
+    width: 96px;
+    max-height: 42px;
   }
   .logo-wordmark-img {
-    width: clamp(118px, 36vw, 150px);
+    width: clamp(112px, 32vw, 136px);
     max-height: 32px;
   }
 }
