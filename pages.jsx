@@ -35,8 +35,9 @@ function Hero() {
   return (
     <section className="hero">
       <div className="hero-poster"/>
-      <video ref={videoRef} className="hero-video" autoPlay muted loop playsInline preload="auto">
-        <source src="hero-bg.mp4" type="video/mp4"/>
+      <video ref={videoRef} className="hero-video" autoPlay muted loop playsInline preload="metadata" poster="hero-poster.webp">
+        <source src="hero-bg-mobile.mp4" type="video/mp4" media="(max-width: 720px)"/>
+        <source src="hero-bg-desktop.mp4" type="video/mp4"/>
       </video>
       <div className="hero-overlay"/>
       <div className="hero-grain"/>

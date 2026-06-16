@@ -283,9 +283,7 @@ h1.display {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background:
-    radial-gradient(ellipse at 30% 60%, rgba(217, 176, 72, 0.18), transparent 60%),
-    linear-gradient(180deg, #0A1B33 0%, #173261 50%, #0A1B33 100%);
+  background: url('hero-poster.webp') center / cover no-repeat;
 }
 .hero-scanline {
   position: absolute;
