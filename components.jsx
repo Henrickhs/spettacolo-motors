@@ -314,11 +314,16 @@ function HeroDust() {
 
 // ---------------- CAR STORE (localStorage) ----------------
 window.SM_STORE = {
-  KEY: 'sm_cars_v1',
+  KEY: 'sm_cars_v2',
+  LEGACY_KEY: 'sm_cars_v1',
   read() {
     try {
       const raw = localStorage.getItem(this.KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const cars = JSON.parse(raw);
+        if (Array.isArray(cars) && cars.length >= 50 && cars.every(c => c.thumbImage && c.images && c.images.length)) return cars;
+      }
+      localStorage.removeItem(this.LEGACY_KEY);
     } catch (e) {}
     return SM_DATA.initialCars;
   },

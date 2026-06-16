@@ -11,14 +11,11 @@ function HomePage() {
     const fill = cars.filter(c => !c.featured);
     featured.push(...fill.slice(0, 6 - featured.length));
   }
-  const topCar = [...cars].sort((a, b) => b.price - a.price)[0];
-
   return (
     <div className="route-anim">
       <Hero />
       <Marquee />
       <BrandStrip />
-      <SpotlightSection car={topCar} />
       <FeaturedSection cars={featured} />
       <ConciergeSection />
       <CategorySection />
@@ -335,7 +332,7 @@ function EstoquePage() {
         <div className="container">
           <div className="filters">
             <button className={"filter-chip " + (!brand ? "active" : "")} onClick={() => setBrand(null)}>Todas</button>
-            {SM_DATA.brands.slice(0, 8).map(b => (
+            {SM_DATA.brands.map(b => (
               <button key={b.slug} className={"filter-chip " + (brand === b.slug ? "active" : "")} onClick={() => setBrand(b.slug)}>
                 {b.name}
               </button>
