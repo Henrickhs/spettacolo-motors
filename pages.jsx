@@ -5,7 +5,7 @@ const { useState: uS, useEffect: uE, useMemo: uM, useRef: uR } = React;
 // HOME
 // ============================================
 function HomePage() {
-  const [cars] = useCars();
+  const [cars, , inventory] = useCars();
   const featured = cars.filter(c => c.featured).slice(0, 6);
   if (featured.length < 6) {
     const fill = cars.filter(c => !c.featured);
@@ -14,7 +14,7 @@ function HomePage() {
   return (
     <div className="route-anim">
       <Hero />
-      <FeaturedSection cars={featured} total={cars.length} />
+      <FeaturedSection cars={featured} total={cars.length} inventory={inventory} />
       <ConciergeSection />
       <PresentationVideoSection />
       <CTASection />
@@ -93,7 +93,7 @@ function BrandStrip() {
   );
 }
 
-function FeaturedSection({ cars, total }) {
+function FeaturedSection({ cars, total, inventory }) {
   return (
     <section className="section">
       <div className="container" style={{marginBottom:48}}>
@@ -105,9 +105,11 @@ function FeaturedSection({ cars, total }) {
             </h2>
           </div>
           <button className="btn gold-line" onClick={() => SM_NAV.go('/estoque')}>
-            Ver estoque completo ({total || cars.length}) <span className="arrow">{'>'}</span>
+            Ver estoque completo{inventory.syncedAt ? ` (${total})` : ''} <span className="arrow">{'>'}</span>
           </button>
         </div>
+        <InventoryStatus inventory={inventory}/>
+        {!cars.length && inventory.syncedAt && <p style={{color:'var(--ink-mute)'}}>Nenhum veículo disponível no momento. Fale com nossa equipe sobre o carro que procura.</p>}
       </div>
       <div className="car-grid" data-anim="fade-up" data-delay="150">
         {cars.map(c => <CarCard key={c.id} car={c}/>)}
@@ -318,7 +320,7 @@ function ConciergeSection() {
 // ESTOQUE
 // ============================================
 function EstoquePage() {
-  const [cars] = useCars();
+  const [cars, , inventory] = useCars();
   const route = useRoute();
   const initialMarca = uM(() => {
     const q = route.split('?')[1];
@@ -330,20 +332,23 @@ function EstoquePage() {
   const [brand, setBrand] = uS(initialMarca);
   const [search, setSearch] = uS('');
   const [sort, setSort] = uS('featured');
+  const brands = uM(() => [...new Map(cars.map(car => [SM_INVENTORY_HELPERS.brandSlug(car.brand), car.brand])).entries()]
+    .map(([slug, name]) => ({slug, name})).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')), [cars]);
 
   uE(() => setBrand(initialMarca), [initialMarca]);
 
   const filtered = uM(() => {
     let r = [...cars];
-    if (brand) r = r.filter(c => c.brand.toLowerCase().replace(/\s/g,'-') === brand.toLowerCase());
+    if (brand) r = r.filter(c => SM_INVENTORY_HELPERS.brandSlug(c.brand) === brand.toLowerCase());
     if (search) {
       const s = search.toLowerCase();
       r = r.filter(c => (c.brand + ' ' + c.model + ' ' + c.version).toLowerCase().includes(s));
     }
-    if (sort === 'price-asc') r.sort((a,b) => a.price - b.price);
-    if (sort === 'price-desc') r.sort((a,b) => b.price - a.price);
-    if (sort === 'year-desc') r.sort((a,b) => parseInt(b.year) - parseInt(a.year));
-    if (sort === 'km-asc') r.sort((a,b) => a.km - b.km);
+    if (sort === 'price-asc') r.sort((a,b) => (a.price ?? Infinity) - (b.price ?? Infinity));
+    if (sort === 'price-desc') r.sort((a,b) => (b.price ?? -Infinity) - (a.price ?? -Infinity));
+    if (sort === 'year-desc') r.sort((a,b) => Number(b.yearModel || b.year.split('/').pop()) - Number(a.yearModel || a.year.split('/').pop()));
+    if (sort === 'km-asc') r.sort((a,b) => (a.km ?? Infinity) - (b.km ?? Infinity));
+    if (sort === 'featured') r.sort((a,b) => Number(!!b.featured) - Number(!!a.featured));
     return r;
   }, [cars, brand, search, sort]);
 
@@ -352,13 +357,14 @@ function EstoquePage() {
       <PageHeader
         eyebrow="Nosso estoque"
         title={<>Toda a <em style={{fontStyle:'italic', color:'var(--gold)'}}>coleção,</em><br/>num só lugar.</>}
-        sub="Esportivos, SUVs premium e colecionáveis disponíveis para compra imediata. Atualizamos diariamente — fale com um consultor para confirmar disponibilidade."
+        sub="Esportivos, SUVs premium e colecionáveis. Consulte os dados e fale com um consultor para confirmar disponibilidade."
       />
       <section style={{padding:'40px 0 120px'}}>
         <div className="container">
+          <InventoryStatus inventory={inventory}/>
           <div className="filters">
             <button className={"filter-chip " + (!brand ? "active" : "")} onClick={() => setBrand(null)}>Todas</button>
-            {SM_DATA.brands.map(b => (
+            {brands.map(b => (
               <button key={b.slug} className={"filter-chip " + (brand === b.slug ? "active" : "")} onClick={() => setBrand(b.slug)}>
                 {b.name}
               </button>
@@ -371,7 +377,7 @@ function EstoquePage() {
               <option value="year-desc">Mais novos</option>
               <option value="km-asc">Menor KM</option>
             </select>
-            <span className="filter-count">{filtered.length} veículos</span>
+            <span className="filter-count">{inventory.syncedAt ? `${filtered.length} veículos` : inventory.status === 'loading' ? 'Consultando estoque' : 'Estoque indisponível'}</span>
           </div>
         </div>
         {filtered.length > 0 ? (
@@ -381,8 +387,8 @@ function EstoquePage() {
         ) : (
           <div className="container" style={{padding:'80px 0', textAlign:'center', color:'var(--ink-mute)'}}>
             <div className="serif" style={{fontSize:48, fontStyle:'italic', color:'var(--gold)', marginBottom:16}}>—</div>
-            <p>Nenhum veículo encontrado com esses filtros.</p>
-            <button className="btn ghost sm" style={{marginTop:24}} onClick={() => { setBrand(null); setSearch(''); }}>Limpar filtros</button>
+            <p>{inventory.status === 'loading' ? 'Estamos consultando o estoque.' : !inventory.syncedAt ? 'O estoque está temporariamente indisponível.' : cars.length ? 'Nenhum veículo encontrado com esses filtros.' : 'Nenhum veículo disponível no momento.'}</p>
+            {(brand || search) && <button className="btn ghost sm" style={{marginTop:24}} onClick={() => { setBrand(null); setSearch(''); }}>Limpar filtros</button>}
           </div>
         )}
       </section>
@@ -394,14 +400,17 @@ function EstoquePage() {
 // CAR DETAIL
 // ============================================
 function CarDetailPage({ id }) {
-  const [cars] = useCars();
-  const car = cars.find(c => c.id === id);
+  const [cars, , inventory] = useCars();
+  const [activeImage, setActiveImage] = uS(0);
+  uE(() => setActiveImage(0), [id]);
+  const car = SM_INVENTORY_HELPERS.findCar(cars, id);
   if (!car) {
     return (
       <div className="route-anim" style={{padding:'200px 0', textAlign:'center'}}>
         <div className="container">
-          <div className="serif" style={{fontSize:80, fontStyle:'italic', color:'var(--gold)', marginBottom:24}}>404</div>
-          <p style={{color:'var(--ink-mute)', marginBottom:32}}>Veículo não encontrado.</p>
+          <div className="serif" style={{fontSize:80, fontStyle:'italic', color:'var(--gold)', marginBottom:24}}>{inventory.syncedAt ? '—' : '…'}</div>
+          <InventoryStatus inventory={inventory}/>
+          {inventory.syncedAt && <p style={{color:'var(--ink-mute)', marginBottom:32}}>Este veículo não está no estoque disponível. Veja outras opções ou fale com nossa equipe.</p>}
           <button className="btn" onClick={() => SM_NAV.go('/estoque')}>Voltar ao estoque</button>
         </div>
       </div>
@@ -411,7 +420,6 @@ function CarDetailPage({ id }) {
   const whatsMsg = encodeURIComponent(`Olá! Tenho interesse no ${car.brand} ${car.model} (Ref ${car.ref}). Está disponível?`);
   const whatsUrl = `https://api.whatsapp.com/send?phone=${SM_DATA.contact.whatsapp}&text=${whatsMsg}`;
   const gallery = car.images && car.images.length ? car.images : [{ gallery: car.image, thumb: car.thumbImage || car.image }];
-  const [activeImage, setActiveImage] = uS(0);
   const selectedImage = gallery[activeImage] || gallery[0];
 
   return (
@@ -428,7 +436,7 @@ function CarDetailPage({ id }) {
               <div className="detail-img">
                 <img src={selectedImage.gallery || selectedImage.thumb || car.image} alt={car.brand + ' ' + car.model}
                      loading="eager" decoding="async"
-                     onError={(e) => { e.target.style.display='none'; }}/>
+                     onError={inventoryImageFallback}/>
               </div>
               {gallery.length > 1 && (
                 <div className="detail-thumbs" aria-label="Fotos do veiculo">
@@ -436,7 +444,7 @@ function CarDetailPage({ id }) {
                     <button key={index} className={"detail-thumb " + (index === activeImage ? "active" : "")}
                             onClick={() => setActiveImage(index)}
                             aria-label={"Ver foto " + (index + 1)}>
-                      <img src={img.thumb || img.gallery} alt="" loading="lazy" decoding="async"/>
+                      <img src={img.thumb || img.gallery} alt="" loading="lazy" decoding="async" onError={inventoryImageFallback}/>
                     </button>
                   ))}
                 </div>
@@ -444,6 +452,7 @@ function CarDetailPage({ id }) {
             </div>
 
             <div className="detail-side">
+              <InventoryStatus inventory={inventory}/>
               <div className="flex between center" style={{marginBottom:14}}>
                 <div className="eyebrow">{car.brand}</div>
                 <span className="mono" style={{fontSize:11, color:'var(--gold)', letterSpacing:'0.18em'}}>REF · {car.ref}</span>
@@ -488,7 +497,7 @@ function CarDetailPage({ id }) {
               <div className="detail-price">
                 <div style={{flex:1}}>
                   <span className="label">Valor à vista</span>
-                  <div className="amount"><span className="currency">R$</span>{new Intl.NumberFormat('pt-BR').format(car.price)}</div>
+                  <div className="amount">{car.price > 0 ? <><span className="currency">R$</span>{new Intl.NumberFormat('pt-BR').format(car.price)}</> : 'Sob consulta'}</div>
                 </div>
               </div>
 
@@ -584,6 +593,7 @@ function VenderPage() {
 // EMPRESA
 // ============================================
 function EmpresaPage() {
+  const [cars, , inventory] = useCars();
   return (
     <div className="route-anim">
       <PageHeader
@@ -623,10 +633,11 @@ function EmpresaPage() {
 
       <div className="stat-row">
         <div className="stat"><div className="n">15+</div><div className="l">Anos de mercado</div></div>
-        <div className="stat"><div className="n">53</div><div className="l">Veiculos no catalogo</div></div>
-        <div className="stat"><div className="n">1k+</div><div className="l">Fotos importadas</div></div>
+        <div className="stat"><div className="n">{inventory.syncedAt ? cars.length : '—'}</div><div className="l">Veículos no catálogo</div></div>
+        <div className="stat"><div className="n">{inventory.syncedAt ? new Intl.NumberFormat('pt-BR').format(cars.reduce((sum, car) => sum + car.images.length, 0)) : '—'}</div><div className="l">Fotos no catálogo</div></div>
         <div className="stat"><div className="n">BR</div><div className="l">Atendimento nacional</div></div>
       </div>
+      <div className="container"><InventoryStatus inventory={inventory}/></div>
 
       <section className="section">
         <div className="container">

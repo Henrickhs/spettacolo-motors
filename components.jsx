@@ -102,7 +102,7 @@ function CarCard({ car }) {
       <div className="car-img-wrap">
         <img className="car-img" src={image} alt={car.brand + ' ' + car.model}
              loading="lazy" decoding="async"
-             onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.style.background = 'var(--surface)'; }}/>
+             onError={inventoryImageFallback}/>
         <div className="car-tag">{car.ref}</div>
       </div>
       <div className="car-info">
@@ -116,8 +116,7 @@ function CarCard({ car }) {
             <span><strong>{SM_FMT.km(car.km)}</strong></span>
           </div>
           <div className="car-price">
-            <span className="car-price-currency">R$</span>
-            {new Intl.NumberFormat('pt-BR').format(car.price)}
+            {car.price > 0 ? <><span className="car-price-currency">R$</span>{new Intl.NumberFormat('pt-BR').format(car.price)}</> : 'Sob consulta'}
           </div>
         </div>
       </div>
@@ -310,38 +309,34 @@ function HeroDust() {
   );
 }
 
-// ---------------- CAR STORE (localStorage) ----------------
-window.SM_STORE = {
-  KEY: 'sm_cars_v2',
-  LEGACY_KEY: 'sm_cars_v1',
-  read() {
-    try {
-      const raw = localStorage.getItem(this.KEY);
-      if (raw) {
-        const cars = JSON.parse(raw);
-        if (Array.isArray(cars) && cars.length >= 50 && cars.every(c => c.thumbImage && c.images && c.images.length)) return cars;
-      }
-      localStorage.removeItem(this.LEGACY_KEY);
-    } catch (e) {}
-    return SM_DATA.initialCars;
-  },
-  write(cars) {
-    localStorage.setItem(this.KEY, JSON.stringify(cars));
-    window.dispatchEvent(new CustomEvent('sm-cars-changed'));
-  },
-  reset() {
-    localStorage.removeItem(this.KEY);
-    window.dispatchEvent(new CustomEvent('sm-cars-changed'));
-  }
-};
-function useCars() {
-  const [cars, setCars] = useState(SM_STORE.read());
+// ---------------- AUTOCERTO INVENTORY ----------------
+function useInventory() {
+  const [inventory, setInventory] = useState(() => SM_INVENTORY.read());
   useEffect(() => {
-    const update = () => setCars(SM_STORE.read());
-    window.addEventListener('sm-cars-changed', update);
-    return () => window.removeEventListener('sm-cars-changed', update);
+    const unsubscribe = SM_INVENTORY.subscribe(() => setInventory(SM_INVENTORY.read()));
+    setInventory(SM_INVENTORY.read());
+    return unsubscribe;
   }, []);
-  return [cars, (newCars) => { SM_STORE.write(newCars); setCars(newCars); }];
+  return inventory;
+}
+function useCars() {
+  const inventory = useInventory();
+  return [inventory.cars, null, inventory];
+}
+function inventoryImageFallback(event) {
+  const image = event.currentTarget;
+  if (!image.src.endsWith('/assets/vehicle-placeholder.svg')) image.src = '/assets/vehicle-placeholder.svg';
+}
+function InventoryStatus({ inventory }) {
+  const date = inventory.syncedAt ? new Date(inventory.syncedAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' }) : null;
+  let message = inventory.status === 'loading' ? 'Carregando estoque…' :
+    inventory.status === 'unavailable' ? 'Não foi possível consultar o estoque agora. Tente novamente ou fale com um consultor.' :
+    inventory.status === 'stale' ? `Atualização pendente. Exibindo o último estoque confirmado${date ? ' em ' + date : ''}. Confirme a disponibilidade com a loja.` :
+    `Estoque atualizado${date ? ' em ' + date : ''}. Confirme a disponibilidade com a loja.`;
+  return <div role="status" aria-live="polite" style={{color:'var(--ink-mute)', fontSize:12, lineHeight:1.7, margin:'20px 0'}}>
+    <span>{message}</span>
+    {['stale', 'unavailable'].includes(inventory.status) && <button className="text-mute" style={{textDecoration:'underline', marginLeft:12}} onClick={() => SM_INVENTORY.refresh(true)}>Tentar atualizar</button>}
+  </div>;
 }
 
 // ---------------- LEADS STORE (localStorage) ----------------
@@ -377,5 +372,5 @@ function useLeads() {
 // Export everything to window
 Object.assign(window, {
   Icon, Logo, NavBar, Footer, CarCard, WhatsFab, PageHeader, useRoute, useCars,
-  useScrollReveal, useGlobalAnimations, HeroDust, useLeads
+  useScrollReveal, useGlobalAnimations, HeroDust, useLeads, useInventory, InventoryStatus, inventoryImageFallback
 });

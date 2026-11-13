@@ -1,0 +1,30 @@
+'use strict';
+const { get, put, BlobPreconditionFailedError } = require('@vercel/blob');
+function createBlobStore({ environment = process.env.VERCEL_ENV, sdk = { get, put } } = {}) {
+  const namespace = environment === 'production' ? 'production' : 'preview';
+  const pathname = `autocerto/${namespace}/inventory-v1.json`;
+  return {
+    async read() {
+      const result = await sdk.get(pathname, { access: 'private', useCache: false, abortSignal: AbortSignal.timeout(4000) });
+      if (!result) return null;
+      if (result.statusCode !== 200) throw new Error('STORAGE_READ_FAILED');
+      const value = await new Response(result.stream).json();
+      return { value, etag: result.blob.etag };
+    },
+    async write(value, etag) {
+      try {
+        return await sdk.put(pathname, JSON.stringify(value), { access: 'private', addRandomSuffix: false,
+          contentType: 'application/json', cacheControlMaxAge: 60, allowOverwrite: !!etag,
+          ...(etag ? { ifMatch: etag } : {}), abortSignal: AbortSignal.timeout(4000) });
+      } catch (error) {
+        if (error instanceof BlobPreconditionFailedError) {
+          throw Object.assign(new Error('WRITE_CONFLICT'), { code: 'WRITE_CONFLICT' });
+        }
+        // The SDK reports create-if-absent collisions as a generic BlobError.
+        // The service re-reads after any failed write to recover a concurrent winner.
+        throw Object.assign(new Error('STORAGE_WRITE_FAILED'), { code: 'STORAGE_WRITE_FAILED' });
+      }
+    }
+  };
+}
+module.exports = { createBlobStore };

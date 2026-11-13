@@ -108,7 +108,7 @@ function AdminDashboard({ onLogout }) {
 // OVERVIEW
 // ============================================
 function AdminOverview() {
-  const [cars] = useCars();
+  const [cars, , inventory] = useCars();
   const totalValue = cars.reduce((s, c) => s + (c.price || 0), 0);
   const avgPrice = cars.length ? totalValue / cars.length : 0;
 
@@ -116,14 +116,15 @@ function AdminOverview() {
     <>
       <div className="admin-head">
         <div>
-          <div className="sub">Painel · 14 Mai 2026</div>
+          <div className="sub">Painel · AutoCerto</div>
           <h1>Visão <em style={{fontStyle:'italic', color:'var(--gold)'}}>geral</em></h1>
         </div>
         <div className="flex gap-sm">
-          <button className="btn sm gold-line" onClick={() => window.dispatchEvent(new CustomEvent('sm-admin-tab', { detail: 'cars' }))}>+ Novo veículo</button>
+          <button className="btn sm gold-line" onClick={() => window.dispatchEvent(new CustomEvent('sm-admin-tab', { detail: 'cars' }))}>Consultar veículos</button>
         </div>
       </div>
 
+      <InventoryStatus inventory={inventory}/>
       <div className="admin-kpis">
         <div className="kpi">
           <div className="l">Estoque ativo</div>
@@ -196,152 +197,40 @@ function AdminOverview() {
 }
 
 // ============================================
-// CARS (CRUD)
+// CARS (AUTOCERTO READ ONLY)
 // ============================================
+function exportLegacyCars() {
+  const saved = {};
+  ['sm_cars_v1', 'sm_cars_v2'].forEach(key => {
+    try { const raw = localStorage.getItem(key); if (raw) saved[key] = JSON.parse(raw); } catch (_) {}
+  });
+  const url = URL.createObjectURL(new Blob([JSON.stringify(saved, null, 2)], {type:'application/json'}));
+  const link = document.createElement('a');
+  link.href = url; link.download = 'spettacolo-alteracoes-locais.json'; link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
 function AdminCars() {
-  const [cars, setCars] = useCars();
-  const [editing, setEditing] = aS(null); // car obj or 'new'
+  const [cars, , inventory] = useCars();
   const [search, setSearch] = aS('');
-
-  aE(() => {
-    const handler = (e) => { if (e.detail === 'cars') { /* noop */ } };
-    window.addEventListener('sm-admin-tab', handler);
-    return () => window.removeEventListener('sm-admin-tab', handler);
-  }, []);
-
   const filtered = cars.filter(c => !search || (c.brand + ' ' + c.model + ' ' + c.ref).toLowerCase().includes(search.toLowerCase()));
-
-  const onDelete = (id) => {
-    if (!confirm('Excluir esse veículo do estoque?')) return;
-    setCars(cars.filter(c => c.id !== id));
-  };
-
-  const onSave = (car) => {
-    if (editing === 'new') {
-      const id = car.brand.toLowerCase().replace(/\s/g,'-') + '-' + car.model.toLowerCase().replace(/\s/g,'-') + '-' + Date.now().toString(36);
-      const ref = 'ST-' + String(cars.length + 1).padStart(3, '0');
-      setCars([{ ...car, id, ref, featured: !!car.featured }, ...cars]);
-    } else {
-      setCars(cars.map(c => c.id === editing.id ? { ...c, ...car } : c));
-    }
-    setEditing(null);
-  };
-
-  const onReset = () => {
-    if (!confirm('Restaurar estoque inicial (perde alterações locais)?')) return;
-    SM_STORE.reset();
-  };
-
   return (
     <>
       <div className="admin-head">
-        <div>
-          <div className="sub">Gestão · estoque</div>
-          <h1>Veículos <em style={{fontStyle:'italic', color:'var(--gold)'}}>· {cars.length}</em></h1>
-        </div>
-        <div className="flex gap-sm" style={{gap:12, flexWrap:'wrap'}}>
-          <button className="btn ghost sm" onClick={onReset}>Restaurar inicial</button>
-          <button className="btn sm" onClick={() => setEditing('new')}>+ Novo veículo</button>
-        </div>
+        <div><div className="sub">Consulta · AutoCerto</div><h1>Veículos <em style={{fontStyle:'italic', color:'var(--gold)'}}>· {cars.length}</em></h1></div>
+        <button className="btn ghost sm" onClick={() => SM_INVENTORY.refresh(true)}>Consultar atualização</button>
       </div>
-
-      <input className="filter-search" placeholder="Buscar por marca, modelo ou referência..."
-             style={{width:'100%', marginBottom:24}}
-             value={search} onChange={e => setSearch(e.target.value)}/>
-
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Veículo</th>
-            <th>Ref</th>
-            <th>Ano</th>
-            <th>KM</th>
-            <th>Preço</th>
-            <th>Destaque</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map(c => (
-            <tr key={c.id}>
-              <td style={{width:80}}><img className="thumb" src={c.thumbImage || c.image} alt="" loading="lazy" decoding="async" onError={e => e.target.removeAttribute('src')}/></td>
-              <td>
-                <div style={{fontFamily:'var(--serif)', fontSize:16}}>{c.brand} {c.model}</div>
-                <div style={{fontSize:11, color:'var(--ink-mute)'}}>{c.version}</div>
-              </td>
-              <td style={{fontFamily:'var(--mono)', fontSize:11, color:'var(--gold)'}}>{c.ref}</td>
-              <td>{c.year}</td>
-              <td>{SM_FMT.km(c.km)}</td>
-              <td><span className="price">{SM_FMT.money(c.price)}</span></td>
-              <td>{c.featured ? <span style={{color:'var(--gold)', fontSize:11, letterSpacing:'0.18em', textTransform:'uppercase'}}>★ Sim</span> : <span style={{color:'var(--ink-dim)'}}>—</span>}</td>
-              <td>
-                <div className="actions">
-                  <button className="iconbtn" title="Editar" onClick={() => setEditing(c)}><Icon.Edit/></button>
-                  <button className="iconbtn danger" title="Excluir" onClick={() => onDelete(c.id)}><Icon.Trash/></button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+      <p style={{color:'var(--ink-mute)', fontSize:13}}>Cadastre, edite ou remova veículos na AutoCerto. O site consulta esse estoque automaticamente. Alterações antigas salvas neste navegador foram preservadas e não substituem o estoque da AutoCerto.</p>
+      <InventoryStatus inventory={inventory}/>
+      <button className="btn ghost sm" style={{marginBottom:24}} onClick={exportLegacyCars}>Exportar alterações locais antigas</button>
+      <input className="filter-search" placeholder="Buscar por marca, modelo ou referência..." style={{width:'100%', marginBottom:24}} value={search} onChange={e => setSearch(e.target.value)}/>
+      <table className="admin-table"><thead><tr><th></th><th>Veículo</th><th>Ref</th><th>Ano</th><th>KM</th><th>Preço</th><th>Destaque</th></tr></thead>
+        <tbody>{filtered.map(c => <tr key={c.id}>
+          <td style={{width:80}}><img className="thumb" src={c.thumbImage || c.image} alt="" loading="lazy" decoding="async" onError={inventoryImageFallback}/></td>
+          <td><div style={{fontFamily:'var(--serif)', fontSize:16}}>{c.brand} {c.model}</div><div style={{fontSize:11, color:'var(--ink-mute)'}}>{c.version}</div></td>
+          <td>{c.ref}</td><td>{c.year}</td><td>{SM_FMT.km(c.km)}</td><td><span className="price">{SM_FMT.money(c.price)}</span></td><td>{c.featured ? '★ Sim' : '—'}</td>
+        </tr>)}</tbody>
       </table>
-
-      {editing && <CarEditModal car={editing === 'new' ? null : editing} onClose={() => setEditing(null)} onSave={onSave}/>}
     </>
-  );
-}
-
-function CarEditModal({ car, onClose, onSave }) {
-  const blank = { brand:'', model:'', version:'', year:'', km:0, price:0, transmission:'Automático', fuel:'Gasolina', color:'', bodyType:'', image:'', featured:false };
-  const [f, setF] = aS(car ? { ...blank, ...car } : blank);
-  const upd = (k) => (e) => setF({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : (e.target.type === 'number' ? Number(e.target.value) : e.target.value) });
-
-  return (
-    <div className="modal-bg" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
-        <div className="modal-head">
-          <h3>{car ? 'Editar veículo' : 'Novo veículo'}</h3>
-          <button className="modal-close" onClick={onClose}><Icon.Close/></button>
-        </div>
-        <div className="modal-body">
-          <div className="modal-row">
-            <div><label>Marca</label><input value={f.brand} onChange={upd('brand')} placeholder="Porsche"/></div>
-            <div><label>Modelo</label><input value={f.model} onChange={upd('model')} placeholder="911"/></div>
-          </div>
-          <div><label>Versão</label><input value={f.version} onChange={upd('version')} placeholder="3.0 Turbo Carrera S"/></div>
-          <div className="modal-row">
-            <div><label>Ano</label><input value={f.year} onChange={upd('year')} placeholder="2022/2023"/></div>
-            <div><label>Quilometragem</label><input type="number" value={f.km} onChange={upd('km')}/></div>
-          </div>
-          <div className="modal-row">
-            <div><label>Preço (R$)</label><input type="number" value={f.price} onChange={upd('price')}/></div>
-            <div><label>Carroceria</label><input value={f.bodyType} onChange={upd('bodyType')} placeholder="Cupê esportivo"/></div>
-          </div>
-          <div className="modal-row">
-            <div><label>Câmbio</label>
-              <select value={f.transmission} onChange={upd('transmission')}>
-                <option>Automático</option><option>Manual</option><option>PDK</option><option>Tiptronic</option><option>SpeedShift</option><option>SelectShift</option>
-              </select>
-            </div>
-            <div><label>Combustível</label>
-              <select value={f.fuel} onChange={upd('fuel')}>
-                <option>Gasolina</option><option>Flex</option><option>Diesel</option><option>Híbrido</option><option>Elétrico</option>
-              </select>
-            </div>
-          </div>
-          <div><label>Cor</label><input value={f.color} onChange={upd('color')}/></div>
-          <div><label>URL da imagem</label><input value={f.image} onChange={upd('image')} placeholder="https://..."/></div>
-          <label style={{display:'flex', alignItems:'center', gap:10, cursor:'pointer'}}>
-            <input type="checkbox" checked={!!f.featured} onChange={upd('featured')} style={{width:'auto'}}/>
-            <span style={{fontSize:12, letterSpacing:'0.18em', textTransform:'uppercase', color:'var(--ink)'}}>★ Destacar na home</span>
-          </label>
-        </div>
-        <div className="modal-foot">
-          <button className="btn ghost sm" onClick={onClose}>Cancelar</button>
-          <button className="btn sm" onClick={() => onSave(f)} disabled={!f.brand || !f.model}>Salvar veículo</button>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -449,9 +338,9 @@ function AdminSettings() {
         </div>
         <div style={{background:'var(--bg-2)', padding:'32px'}}>
           <div className="eyebrow" style={{marginBottom:14}}>Persistência</div>
-          <h3 className="serif" style={{fontSize:24, marginBottom:12}}>Estoque local</h3>
-          <p style={{color:'var(--ink-mute)', fontSize:13, marginBottom:20}}>Veículos adicionados são salvos no navegador (localStorage). Em produção, conectar ao banco do AutoCerto.</p>
-          <button className="btn ghost sm" onClick={() => { if (confirm('Limpar estoque local?')) SM_STORE.reset(); }}>Restaurar estoque inicial</button>
+          <h3 className="serif" style={{fontSize:24, marginBottom:12}}>Estoque AutoCerto</h3>
+          <p style={{color:'var(--ink-mute)', fontSize:13, marginBottom:20}}>Os veículos públicos são consultados na AutoCerto. Faça alterações na AutoCerto; o site mantém o último estoque confirmado quando uma atualização falha. Alterações locais antigas permanecem disponíveis para exportação.</p>
+          <button className="btn ghost sm" onClick={exportLegacyCars}>Exportar alterações locais antigas</button>
         </div>
       </div>
       <style>{`@media (max-width: 720px) { .set-grid { grid-template-columns: 1fr !important; } }`}</style>
