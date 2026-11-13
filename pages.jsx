@@ -23,19 +23,37 @@ function HomePage() {
 }
 
 function Hero() {
-  const videoRef = uR(null);
+  const [media, setMedia] = uS(null);
   uE(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = 0.85;
-    }
+    const portrait = window.matchMedia('(max-aspect-ratio: 1/1)');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const connection = navigator.connection;
+    const update = () => {
+      if (reducedMotion.matches || connection?.saveData || ['slow-2g', '2g'].includes(connection?.effectiveType)) {
+        setMedia(null);
+        return;
+      }
+      setMedia(portrait.matches ? 'mobile' : 'desktop');
+    };
+    update();
+    portrait.addEventListener('change', update);
+    reducedMotion.addEventListener('change', update);
+    connection?.addEventListener?.('change', update);
+    return () => {
+      portrait.removeEventListener('change', update);
+      reducedMotion.removeEventListener('change', update);
+      connection?.removeEventListener?.('change', update);
+    };
   }, []);
   return (
     <section className="hero">
-      <div className="hero-poster"/>
-      <video ref={videoRef} className="hero-video" autoPlay muted loop playsInline preload="metadata" poster="hero-poster.webp">
-        <source src="hero-bg-mobile.mp4" type="video/mp4" media="(max-width: 720px)"/>
-        <source src="hero-bg-desktop.mp4" type="video/mp4"/>
-      </video>
+      <picture className="hero-poster">
+        <source srcSet="hero-poster-mobile.webp" media="(max-aspect-ratio: 1/1)"/>
+        <img src="hero-poster.webp" alt="" fetchPriority="high"/>
+      </picture>
+      {media && <video key={media} className="hero-video" autoPlay muted loop playsInline preload="none" aria-hidden="true"
+        src={`hero-bg-${media}.mp4?v=20261113`} poster={media === 'mobile' ? 'hero-poster-mobile.webp' : 'hero-poster.webp'}
+        onError={() => setMedia(null)}/>}
       <div className="hero-overlay"/>
       <div className="hero-grain"/>
       <HeroDust/>
@@ -208,8 +226,8 @@ function PresentationVideoSection() {
             </p>
           </div>
           <div className="presentation-video-card">
-            <video controls playsInline preload="metadata" poster="hero-poster.webp">
-              <source src="presentation-video.mp4" type="video/mp4"/>
+            <video controls playsInline preload="none" poster="hero-poster-mobile.webp">
+              <source src="hero-bg-mobile.mp4?v=20261113" type="video/mp4"/>
             </video>
             <div className="video-caption">
               <span>Apresentacao da loja</span>

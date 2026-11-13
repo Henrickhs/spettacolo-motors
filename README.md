@@ -23,6 +23,10 @@ Use Node 24, `npm ci`, `npm test`, then `npm run build`. The build compiles JSX 
 
 Push a feature branch for Preview. Verify the **f4wa** deployment, `/api/estoque`, count/IDs/prices/photos against the source, filters and legacy detail links before merging to `main`. Both environments need their configured secrets and private Blob connection. The repository also has another Vercel integration; identify deployments by project name rather than assuming every Vercel status refers to production.
 
+## Home video
+
+The supplied Spettacolo reel retains its full 57.85-second duration, encoded as silent H.264 with faststart: desktop 1920×1080 (22,899,381 bytes) and portrait 720×1280 (10,153,677 bytes). The desktop crop comes directly from the original; no extra CSS zoom is applied. The hero selects a single source by viewport aspect ratio. Portrait tablets use the portrait version. Reduced-motion preference, data saver and 2G connections show the responsive WebP poster without requesting hero video. The separate presentation player uses the full portrait reel on demand with `preload="none"`; its previous missing `presentation-video.mp4` reference is replaced.
+
 ## Failure and rollback
 
 The public status deliberately omits upstream error messages. To investigate: check the configured unit, secret presence, AutoCerto availability, function status, Blob connection/quota and snapshot timestamps. Do not log credentials or raw upstream responses. A failed source update should not be repaired by clearing the stored snapshot. A deployment can be rolled back in the f4wa project without DNS changes; rolling back to pre-integration code restores obsolete local data and should be used only after considering that limitation.

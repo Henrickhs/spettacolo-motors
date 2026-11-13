@@ -8,7 +8,7 @@ const out = path.join(root, 'dist');
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
 const staticFiles = ['data.js', 'inventory.js', 'styles.css', 'estoque.html', 'robots.txt', 'sitemap.xml', 'llms.txt',
-  'hero-bg-desktop.mp4', 'hero-bg-mobile.mp4', 'hero-poster.webp'];
+  'hero-bg-desktop.mp4', 'hero-bg-mobile.mp4', 'hero-poster.webp', 'hero-poster-mobile.webp'];
 for (const file of staticFiles) if (fs.existsSync(path.join(root, file))) fs.copyFileSync(path.join(root, file), path.join(out, file));
 fs.cpSync(path.join(root, 'assets'), path.join(out, 'assets'), { recursive: true });
 for (const file of ['components', 'pages', 'admin', 'app']) {

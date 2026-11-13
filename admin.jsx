@@ -219,7 +219,7 @@ function AdminCars() {
         <div><div className="sub">Consulta · AutoCerto</div><h1>Veículos <em style={{fontStyle:'italic', color:'var(--gold)'}}>· {cars.length}</em></h1></div>
         <button className="btn ghost sm" onClick={() => SM_INVENTORY.refresh(true)}>Consultar atualização</button>
       </div>
-      <p style={{color:'var(--ink-mute)', fontSize:13}}>Cadastre, edite ou remova veículos na AutoCerto. O site consulta esse estoque automaticamente. Alterações antigas salvas neste navegador foram preservadas e não substituem o estoque da AutoCerto.</p>
+      <p style={{color:'var(--ink-mute)', fontSize:13}}>Cadastre, edite ou remova veículos na AutoCerto. A sincronização é verificada a cada 30 minutos durante o uso do site, com alguns minutos adicionais de cache. Este painel consulta a última versão disponível no servidor. Alterações antigas salvas neste navegador foram preservadas e não substituem o estoque da AutoCerto.</p>
       <InventoryStatus inventory={inventory}/>
       <button className="btn ghost sm" style={{marginBottom:24}} onClick={exportLegacyCars}>Exportar alterações locais antigas</button>
       <input className="filter-search" placeholder="Buscar por marca, modelo ou referência..." style={{width:'100%', marginBottom:24}} value={search} onChange={e => setSearch(e.target.value)}/>
