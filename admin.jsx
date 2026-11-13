@@ -127,9 +127,9 @@ function AdminOverview() {
       <InventoryStatus inventory={inventory}/>
       <div className="admin-kpis">
         <div className="kpi">
-          <div className="l">Estoque ativo</div>
+          <div className="l">Estoque AutoCerto</div>
           <div className="v">{String(cars.length).padStart(2, '0')}</div>
-          <div className="d up">▲ veículos disponíveis</div>
+          <div className="d up">veículos na última consulta</div>
         </div>
         <div className="kpi">
           <div className="l">Valor em estoque</div>
@@ -150,7 +150,7 @@ function AdminOverview() {
 
       <div style={{display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:24}} className="ov-grid">
         <div>
-          <h3 style={{fontSize:12, letterSpacing:'0.28em', textTransform:'uppercase', color:'var(--ink-mute)', marginBottom:16}}>Últimos cadastros</h3>
+          <h3 style={{fontSize:12, letterSpacing:'0.28em', textTransform:'uppercase', color:'var(--ink-mute)', marginBottom:16}}>Veículos no estoque</h3>
           <table className="admin-table">
             <thead>
               <tr><th></th><th>Veículo</th><th>Ano</th><th>Preço</th></tr>

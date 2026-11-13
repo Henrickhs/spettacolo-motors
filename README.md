@@ -7,6 +7,8 @@ Vercel project: `spettacolo-motors-f4wa` (`henrick1`). Do not change domains to 
 
 `GET /api/estoque` reads the documented AutoCerto API from the server. The browser receives only normalized public vehicle fields. OAuth credentials, tokens, plate, chassis and Renavam are never returned. The dealership is pinned to `AUTOCERTO_UNIT_CODE` and verified against the allowed units.
 
+Scope is the complete current stock returned by `ObterEstoque`, whose documentation calls it "Obter Estoque Completo da Loja". The real API and XML responses contained the same 63 IDs when verified. The response does not expose a separate sold/active flag; the website treats membership in this inventory response as authoritative and does not import sales/customer history or infer additional availability guarantees.
+
 Configure `AUTOCERTO_USERNAME`, `AUTOCERTO_PASSWORD`, `AUTOCERTO_UNIT_CODE` as server environment secrets in Production and Preview. The private Vercel Blob store is connected through OIDC and `BLOB_STORE_ID`; no permanent Blob token is needed.
 
 The last validated snapshot is persisted in private Blob, separately for production and preview. Conditional ETag writes protect against concurrent updates. The endpoint renews an expired snapshot on demand after **30 minutes**; the browser checks every 5 minutes while visible and Vercel caches responses for up to 5 minutes. There is no background scheduler and no promise of immediate updates when nobody visits. The interval limits writes to approximately 1,488 per 31-day month under continuous traffic, excluding previews/retries/conflicts; monitor the account's shared Blob quotas.
