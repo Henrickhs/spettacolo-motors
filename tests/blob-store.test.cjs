@@ -28,3 +28,22 @@ test('SDK ETag conflict is recoverable', async () => {
   const store = createBlobStore({ sdk: { put: async () => { throw new BlobPreconditionFailedError(); } } });
   await assert.rejects(store.write({}, 'old-etag'), { code: 'WRITE_CONFLICT' });
 });
+
+test('refresh uses the strong origin ETag instead of the compressed weak validator', async () => {
+  const strongEtag = '"snapshot-version-1"';
+  let written = false;
+  const store = createBlobStore({ environment: 'production', sdk: {
+    get: async (_key, options) => ({ statusCode: 200,
+      stream: new Response('{"cars":[]}').body,
+      blob: { etag: options.headers?.['Accept-Encoding'] === 'identity' ? strongEtag : 'W/' + strongEtag }
+    }),
+    put: async (_key, _body, options) => {
+      if (options.ifMatch !== strongEtag) throw new BlobPreconditionFailedError();
+      assert.equal(options.allowOverwrite, true);
+      written = true;
+    }
+  } });
+  const snapshot = await store.read();
+  await store.write(snapshot.value, snapshot.etag);
+  assert.equal(written, true);
+});

@@ -5,7 +5,10 @@ function createBlobStore({ environment = process.env.VERCEL_ENV, sdk = { get, pu
   const pathname = `autocerto/${namespace}/inventory-v1.json`;
   return {
     async read() {
-      const result = await sdk.get(pathname, { access: 'private', useCache: false, abortSignal: AbortSignal.timeout(4000) });
+      // Compressed responses can weaken the ETag (W/), which cannot satisfy
+      // Blob's strong If-Match comparison. Read the identity representation.
+      const result = await sdk.get(pathname, { access: 'private', useCache: false,
+        headers: { 'Accept-Encoding': 'identity' }, abortSignal: AbortSignal.timeout(4000) });
       if (!result) return null;
       if (result.statusCode !== 200) throw new Error('STORAGE_READ_FAILED');
       const value = await new Response(result.stream).json();
