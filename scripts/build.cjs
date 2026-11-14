@@ -7,7 +7,8 @@ const out = path.join(root, 'dist');
 // The generated directory is fixed inside this checkout; never package server code or secrets as static assets.
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
-const staticFiles = ['data.js', 'inventory.js', 'styles.css', 'estoque.html', 'robots.txt', 'sitemap.xml', 'llms.txt',
+const staticFiles = ['data.js', 'inventory.js', 'routing.js', 'styles.css', 'estoque.html', 'robots.txt', 'sitemap.xml', 'llms.txt',
+  'favicon.ico', 'favicon.svg', 'favicon-32x32.png', 'favicon-192x192.png', 'apple-touch-icon.png',
   'hero-bg-desktop.mp4', 'hero-bg-mobile.mp4', 'hero-poster.webp', 'hero-poster-mobile.webp'];
 for (const file of staticFiles) if (fs.existsSync(path.join(root, file))) fs.copyFileSync(path.join(root, file), path.join(out, file));
 fs.cpSync(path.join(root, 'assets'), path.join(out, 'assets'), { recursive: true });
@@ -19,4 +20,9 @@ let html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 html = html.replace(/\s*<script[^>]+@babel\/standalone[^>]*><\/script>/g, '')
   .replace(/type="text\/babel" src="([^"]+)\.jsx/g, 'defer src="$1.js');
 fs.writeFileSync(path.join(out, 'index.html'), html);
+// The vehicle function serves this compiled shell with per-car metadata.
+// It is explicitly included in the function bundle, never published as backend source.
+const serverAssets = path.join(root, 'server', 'generated');
+fs.mkdirSync(serverAssets, { recursive: true });
+fs.writeFileSync(path.join(serverAssets, 'vehicle-shell.html'), html);
 console.log('Build OK: static assets and compiled React; server files excluded.');

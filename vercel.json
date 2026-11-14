@@ -3,17 +3,34 @@
   "framework": null,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "functions": { "api/estoque.js": { "maxDuration": 30 } },
-  "redirects": [
+  "functions": {
+    "api/estoque.js": {
+      "maxDuration": 30
+    },
+    "api/veiculo/*.js": {
+      "maxDuration": 30,
+      "includeFiles": "server/generated/vehicle-shell.html"
+    }
+  },
+  "headers": [
     {
-      "source": "/:vehicle([Vv][Ee][Ii][Cc][Uu][Ll][Oo])/:slug/:id([0-9]+)/:details([Dd][Ee][Tt][Aa][Ll][Hh][Ee][Ss]){/}?",
-      "destination": "/#/veiculo/autocerto-:id",
-      "permanent": true
+      "source": "/api/estoque",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
     }
   ],
-  "headers": [
-    { "source": "/api/estoque", "headers": [
-      { "key": "X-Content-Type-Options", "value": "nosniff" }
-    ] }
+  "rewrites": [
+    {
+      "source": "/:vehicle([Vv][Ee][Ii][Cc][Uu][Ll][Oo])/:slug/:id([0-9]+)/:details([Dd][Ee][Tt][Aa][Ll][Hh][Ee][Ss]){/}?",
+      "destination": "/api/veiculo/:id"
+    },
+    {
+      "source": "/:vehicle([Vv][Ee][Ii][Cc][Uu][Ll][Oo])/:id([0-9]+){/}?",
+      "destination": "/api/veiculo/:id"
+    }
   ]
 }

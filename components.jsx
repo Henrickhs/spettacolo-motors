@@ -63,7 +63,7 @@ function NavBar() {
         <div className="nav-links">
           {links.map(l => (
             <a key={l.href} className={"nav-link " + (isActive(l.href) ? "active" : "")}
-               href={"#" + l.href} onClick={(e) => { e.preventDefault(); SM_NAV.go(l.href); }}>
+               href={"/#" + l.href} onClick={(e) => { e.preventDefault(); SM_NAV.go(l.href); }}>
               {l.label}
             </a>
           ))}
@@ -81,7 +81,7 @@ function NavBar() {
       <div className={"nav-mobile " + (open ? "open" : "")}>
         {links.map(l => (
           <a key={l.href} className={"nav-link " + (isActive(l.href) ? "active" : "")}
-             href={"#" + l.href} onClick={(e) => { e.preventDefault(); setOpen(false); SM_NAV.go(l.href); }}>
+             href={"/#" + l.href} onClick={(e) => { e.preventDefault(); setOpen(false); SM_NAV.go(l.href); }}>
             {l.label}
           </a>
         ))}
@@ -140,11 +140,11 @@ function Footer() {
           <div>
             <h4>Navegação</h4>
             <div className="footer-list">
-              <a href="#/" onClick={(e)=>{e.preventDefault();SM_NAV.go('/');}}>Home</a>
-              <a href="#/estoque" onClick={(e)=>{e.preventDefault();SM_NAV.go('/estoque');}}>Estoque</a>
-              <a href="#/vender" onClick={(e)=>{e.preventDefault();SM_NAV.go('/vender');}}>Venda seu Veículo</a>
-              <a href="#/empresa" onClick={(e)=>{e.preventDefault();SM_NAV.go('/empresa');}}>Quem Somos</a>
-              <a href="#/contato" onClick={(e)=>{e.preventDefault();SM_NAV.go('/contato');}}>Contato</a>
+              <a href="/#/" onClick={(e)=>{e.preventDefault();SM_NAV.go('/');}}>Home</a>
+              <a href="/#/estoque" onClick={(e)=>{e.preventDefault();SM_NAV.go('/estoque');}}>Estoque</a>
+              <a href="/#/vender" onClick={(e)=>{e.preventDefault();SM_NAV.go('/vender');}}>Venda seu Veículo</a>
+              <a href="/#/empresa" onClick={(e)=>{e.preventDefault();SM_NAV.go('/empresa');}}>Quem Somos</a>
+              <a href="/#/contato" onClick={(e)=>{e.preventDefault();SM_NAV.go('/contato');}}>Contato</a>
             </div>
           </div>
           <div>
@@ -161,7 +161,7 @@ function Footer() {
             <div className="footer-list">
               <a href="https://www.instagram.com/spettacolo.motors/" target="_blank" rel="noreferrer">Instagram · {SM_DATA.contact.instagram}</a>
               <a href="https://www.tiktok.com/@spettacolomotors" target="_blank" rel="noreferrer">TikTok · {SM_DATA.contact.tiktok}</a>
-              <a href="#/admin" onClick={(e)=>{e.preventDefault();SM_NAV.go('/admin');}} style={{opacity:0.6, fontSize:11, letterSpacing:'0.2em', textTransform:'uppercase', marginTop:8}}>Acesso restrito</a>
+              <a href="/#/admin" onClick={(e)=>{e.preventDefault();SM_NAV.go('/admin');}} style={{opacity:0.6, fontSize:11, letterSpacing:'0.2em', textTransform:'uppercase', marginTop:8}}>Acesso restrito</a>
             </div>
           </div>
         </div>
@@ -201,18 +201,13 @@ function PageHeader({ eyebrow, title, sub }) {
 }
 
 // ---------------- ROUTING ----------------
-window.SM_NAV = {
-  go(path) {
-    window.location.hash = path;
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }
-};
+window.SM_NAV = SM_ROUTING.createRouter(window);
 function useRoute() {
-  const [route, setRoute] = useState(window.location.hash.slice(1) || '/');
+  const [route, setRoute] = useState(() => SM_NAV.read());
   useEffect(() => {
-    const onHash = () => setRoute(window.location.hash.slice(1) || '/');
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
+    const unsubscribe = SM_NAV.subscribe(setRoute);
+    setRoute(SM_NAV.read());
+    return unsubscribe;
   }, []);
   return route;
 }

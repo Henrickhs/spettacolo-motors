@@ -1,11 +1,5 @@
 'use strict';
-const { createAutoCertoClient } = require('../server/autocerto-client.cjs');
-const { normalizeStock } = require('../server/autocerto-model.cjs');
-const { createBlobStore } = require('../server/blob-store.cjs');
-const { createInventoryService } = require('../server/inventory-service.cjs');
-const unitCode = process.env.AUTOCERTO_UNIT_CODE;
-const client = createAutoCertoClient({ username: process.env.AUTOCERTO_USERNAME, password: process.env.AUTOCERTO_PASSWORD, unitCode });
-const service = createInventoryService({ store: createBlobStore(), fetchStock: client.fetchStock, normalize: normalizeStock, unitCode });
+const service = require('../server/inventory-runtime.cjs');
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('X-Content-Type-Options', 'nosniff');
