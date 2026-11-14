@@ -28,7 +28,7 @@ const Icon = {
 function Logo({ size = 'md' }) {
   return (
     <button className={"nav-logo logo-" + size} onClick={() => SM_NAV.go('/')} aria-label="Spettacolo Motors - pagina inicial">
-      <img className="logo-mark-img" src="assets/brand/spettacolo-mark.png" alt="" aria-hidden="true"/>
+      <img className="logo-mark-img" src="assets/brand/spettacolo-mark.svg" alt="" aria-hidden="true"/>
       <img className="logo-wordmark-img" src="assets/brand/spettacolo-logo-wordmark.png" alt="Spettacolo Motors"/>
     </button>
   );
