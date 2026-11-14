@@ -4,6 +4,13 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": { "api/estoque.js": { "maxDuration": 30 } },
+  "redirects": [
+    {
+      "source": "/:vehicle([Vv][Ee][Ii][Cc][Uu][Ll][Oo])/:slug/:id([0-9]+)/:details([Dd][Ee][Tt][Aa][Ll][Hh][Ee][Ss]){/}?",
+      "destination": "/#/veiculo/autocerto-:id",
+      "permanent": true
+    }
+  ],
   "headers": [
     { "source": "/api/estoque", "headers": [
       { "key": "X-Content-Type-Options", "value": "nosniff" }

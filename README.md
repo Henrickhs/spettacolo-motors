@@ -19,6 +19,8 @@ If AutoCerto fails, the endpoint retains the prior cars and synchronization time
 
 Stable IDs use `autocerto-Codigo`. Existing links ending in the original source ID continue to resolve. Inventory edits belong in AutoCerto; the old browser-local edits remain intact and can be exported from the admin page. Integration is read-only toward AutoCerto.
 
+AutoCerto lead links at `/Veiculo/<slug>/<numeric-id>/detalhes` permanently redirect to `/#/veiculo/autocerto-<numeric-id>`. The rule accepts case variants and an optional trailing slash, relies on Vercel's incoming-query passthrough, and never redirects unrelated paths. The source ID is authoritative even when the slug changes; a vehicle absent from current stock keeps the normal not-found state. `tests/legacy-vehicle-routes.test.cjs` compiles the real configuration with Vercel's routing utilities. Check the full redirect chain, query preservation and vehicle detail in Preview before production.
+
 ## Build and checks
 
 Use Node 24, `npm ci`, `npm test`, then `npm run build`. The build compiles JSX and copies an explicit allowlist into `dist`; backend source, tests and environment files are excluded. Vercel builds `api/estoque.js` separately as a server function.

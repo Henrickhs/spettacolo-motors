@@ -17,6 +17,12 @@ function createBlobStore({ environment = process.env.VERCEL_ENV, sdk = { get, pu
           contentType: 'application/json', cacheControlMaxAge: 60, allowOverwrite: !!etag,
           ...(etag ? { ifMatch: etag } : {}), abortSignal: AbortSignal.timeout(4000) });
       } catch (error) {
+        const type = error?.constructor?.name;
+        console.error('[inventory] snapshot_write_failed', {
+          type: /^Blob[A-Za-z]*Error$/.test(type || '') ? type : 'Error',
+          etagPresent: !!etag, etagWeak: String(etag || '').startsWith('W/'),
+          etagQuoted: /^".*"$/.test(etag || '')
+        });
         if (error instanceof BlobPreconditionFailedError) {
           throw Object.assign(new Error('WRITE_CONFLICT'), { code: 'WRITE_CONFLICT' });
         }
